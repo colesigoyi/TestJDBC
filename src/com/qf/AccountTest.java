@@ -5,11 +5,11 @@ import java.sql.*;
 import java.util.Scanner;
 
 /**
- * @ program: TestJDBC
- * @ author: TaoXueFeng
- * @ create: 2019-08-22 11:48
+ * @ program TestJDBC
+ * @ create 2019-08-22 11:48
  * @ desc:
- **/
+ * @author taoxuefeng
+ * */
 
 public class AccountTest {
     public static void main(String[] args) {
@@ -36,10 +36,10 @@ public class AccountTest {
      */
     private static boolean oneToOne(String fromAccount, String toAccount, double money, String pwd) {
         Connection conn = null;
-        PreparedStatement stF = null;
-        Statement stT = null;
-        ResultSet rsF = null;
-        ResultSet rsT = null;
+        PreparedStatement stf = null;
+        Statement stt = null;
+        ResultSet rsf = null;
+        ResultSet rst = null;
         if (fromAccount.isEmpty()) {
             System.out.println("转账用户用户名输入不能为空！");
             return false;
@@ -56,21 +56,21 @@ public class AccountTest {
             try {
                 conn = DBUtil.getConnection();
                 String sqlFrom = "SELECT user_name, user_pwd,account_balance FROM bank_account WHERE user_name = ? and user_pwd = ?";
-                stF = conn.prepareStatement(sqlFrom);
-                stF.setString(1,fromAccount);
-                stF.setString(2,pwd);
-                rsF = stF.executeQuery();
-                boolean next = rsF.next();
-                if (!next) {
+                stf = conn.prepareStatement(sqlFrom);
+                stf.setString(1,fromAccount);
+                stf.setString(2,pwd);
+                rsf = stf.executeQuery();
+                boolean nextf = rsf.next();
+                if (!nextf) {
                     System.out.println("转入账户用户或密码错误！");
                     return false;
                 }else {
-                    if (rsF.getDouble("account_balance") >= money) {
+                    if (rsf.getDouble("account_balance") >= money) {
                         String sqlFromM = "update  bank_account set account_balance = account_balance - ?  WHERE user_name = ?";
-                        stF = conn.prepareStatement(sqlFromM);
-                        stF.setDouble(1,money);
-                        stF.setString(2,fromAccount);
-                        stF.executeUpdate();
+                        stf = conn.prepareStatement(sqlFromM);
+                        stf.setDouble(1,money);
+                        stf.setString(2,fromAccount);
+                        stf.executeUpdate();
                     } else {
                         System.out.println("账户余额不足！");
                         return false;
@@ -79,27 +79,28 @@ public class AccountTest {
             } catch (SQLException e) {
                 e.printStackTrace();
             } finally {
-                DBUtil.closeConnection(conn, stF, rsF);
+                DBUtil.closeConnection(conn, stf, rsf);
             }
             try {
                 conn = DBUtil.getConnection();
                 String sqlTo = "SELECT user_name, user_pwd,account_balance FROM bank_account WHERE user_name = '" + toAccount + "'";
-                stT = conn.createStatement();
-                rsT = stT.executeQuery(sqlTo);
-                boolean nextT = rsT.next();
-                if (!nextT) {
+                assert conn != null;
+                stt = conn.createStatement();
+                rst = stt.executeQuery(sqlTo);
+                boolean nextt = rst.next();
+                if (!nextt) {
                     System.out.println("转入账号不存在！");
                     return false;
                 }else {
                     String sqlToM = "update  bank_account set account_balance = account_balance + " + money + "  WHERE user_name = '" + toAccount + "'";
-                    stT = conn.createStatement();
-                    stT.executeUpdate(sqlToM);
+                    stt = conn.createStatement();
+                    stt.executeUpdate(sqlToM);
                 }
 
             } catch (SQLException e) {
                 e.printStackTrace();
             } finally {
-                DBUtil.closeConnection(conn, stT, rsT);
+                DBUtil.closeConnection(conn, stt, rst);
             }
             return true;
 
