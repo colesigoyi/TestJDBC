@@ -74,6 +74,21 @@ public class DBUtil {
             e.printStackTrace();
         }
     }
+    public static void close(Connection con, Statement sta, Statement res) {
+        try {
+            if (con != null) {
+                con.close();
+            }
+            if (sta != null) {
+                sta.close();
+            }
+            if (res != null) {
+                res.close();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
     @Test
     public void testUtile() {
         Connection connection = getConnection();
